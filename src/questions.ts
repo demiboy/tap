@@ -1,6 +1,7 @@
+import type { QuestionCollection } from 'inquirer';
+
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { QuestionCollection } from 'inquirer';
 
 export default <QuestionCollection>[
 	{
