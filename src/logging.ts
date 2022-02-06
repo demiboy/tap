@@ -7,10 +7,20 @@ enum Icon {
 	INFO = 'ℹ️',
 }
 
-type ColourEscapeSequence = `\x1b[${number}m`;
+enum EscapeSequences {
+	RESET = '\x1b[0m',
+	BOLD = '\x1b[1m',
+	UNDERLINE = '\x1b[4m',
 
-const log = (icon: Icon, colour: ColourEscapeSequence, ...args: unknown[]) => {
-	process.stdout.write(`${colour}\x1b[1m${icon} ${args.join(' ')}\x1b[0m${EOL}`);
+	FG_RED = '\x1b[31m',
+	FG_GREEN = '\x1b[32m',
+	FG_YELLOW = '\x1b[33m',
+	FG_BLUE = '\x1b[34m',
+	FG_MAGENTA = '\x1b[35m',
+}
+
+const log = (icon: Icon, colour: EscapeSequences, ...args: unknown[]) => {
+	process.stdout.write(`${colour}${EscapeSequences.BOLD}${icon} ${args.join(' ')}${EscapeSequences.RESET}${EOL}`);
 
 	return {
 		info,
@@ -20,12 +30,12 @@ const log = (icon: Icon, colour: ColourEscapeSequence, ...args: unknown[]) => {
 	};
 };
 
-const info = (...args: unknown[]) => log(Icon.INFO, '\x1b[34m', ...args);
-const warn = (...args: unknown[]) => log(Icon.WARN, '\x1b[33m', ...args);
+const info = (...args: unknown[]) => log(Icon.INFO, EscapeSequences.FG_BLUE, ...args);
+const warn = (...args: unknown[]) => log(Icon.WARN, EscapeSequences.FG_YELLOW, ...args);
 const fatal = (...args: unknown[]) => {
-	log(Icon.FATAL, '\x1b[31m', ...args);
+	log(Icon.FATAL, EscapeSequences.FG_RED, ...args);
 	process.exit(1);
 };
-const success = (...args: unknown[]) => log(Icon.SUCCESS, '\x1b[32m', ...args);
+const success = (...args: unknown[]) => log(Icon.SUCCESS, EscapeSequences.FG_GREEN, ...args);
 
-export { info, warn, fatal, success };
+export { info, warn, fatal, success, EscapeSequences };

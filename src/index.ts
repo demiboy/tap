@@ -1,26 +1,50 @@
 #! /usr/bin/env node
 
-import type { QuestionCollection } from 'inquirer';
+import type { Question } from 'inquirer';
+import type { ITapConfig } from './interfaces';
 
-import { createDirectoryAndCheckForExistence, createTemplateContents, getTapConfig, ITapConfig } from './utilities';
+import {
+	createDirectoryAndCheckForExistence,
+	createTemplateContents,
+	doFirstTimeInstall,
+	getTapConfig,
+} from './utilities';
 import { default as questions } from './questions';
+import { commands } from './commands';
 import { resolve } from 'node:path';
 import { prompt } from 'inquirer';
+import { fatal } from './logging';
 
-interface IBaseAnswers {
-	template: string;
-	name: string;
+(async () => {
+	await doProcessArguments();
+	await doFirstTimeInstall();
+	await doGenerateProject();
+})().catch(fatal);
+
+async function doGenerateProject() {
+	let data = await prompt(questions);
+	const config = await getTapConfig(data.template, {});
+
+	data = { ...data, ...(await prompt(config.questions)) };
+
+	await createDirectoryAndCheckForExistence(resolve('.', data.name));
+	await createTemplateContents({
+		template: data.template,
+		name: data.name,
+		responses: data,
+	});
 }
 
-prompt<IBaseAnswers>(questions).then(async ({ template, name }) => {
-	const configQuestions = (await getTapConfig(template)).questions;
+async function doProcessArguments() {
+	const [command, ...args] = process.argv.slice(2);
 
-	prompt(configQuestions).then((responses) => {
-		createDirectoryAndCheckForExistence(resolve('.', name));
-		createTemplateContents(template, name, { ...responses, name });
-	});
-});
+	if (!command) return;
+	if (!commands.has(command)) fatal(`Command ${command} not found`);
 
-export const defineConfiguration = (questions: QuestionCollection): ITapConfig => ({
+	commands.get(command)!.run(args, commands);
+	process.exit(0);
+}
+
+export const doDefineConfiguration = (questions: Question[]): ITapConfig => ({
 	questions,
 });

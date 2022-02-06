@@ -1,9 +1,9 @@
-import type { QuestionCollection } from 'inquirer';
+import type { Question } from 'inquirer';
 
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-export default <QuestionCollection>[
+export default <Question[]>[
 	{
 		name: 'template',
 		type: 'list',

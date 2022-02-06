@@ -1,20 +1,16 @@
-import type { Answers, QuestionCollection } from 'inquirer';
+import type { ITapConfig, ICreateTemplateContentOptions } from './interfaces';
 
 import { mkdir, readdir, readFile, writeFile, rm } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render } from 'mustache';
-import { fatal } from './logging';
+import { fatal, success } from './logging';
+import { homedir } from 'node:os';
 import { copy } from 'fs-extra'; // TODO: remove this and implement it myself
 
+const HOME = homedir();
 const DENY_LIST = ['node_modules', '.taprc.js'];
-
-export interface ITapConfig {
-	questions: QuestionCollection;
-
-	name?: string;
-}
 
 /**
  * Reads a directory recursively.
@@ -43,21 +39,26 @@ const createDirectoryAndCheckForExistence = async (path: string) => {
 /**
  * Gets the tap configuration file.
  */
-const getTapConfig = async (template: string) => {
-	return (await import(pathToFileURL(resolve(__dirname, '..', 'templates', template, '.taprc.js')).toString())).default as ITapConfig;
+const getTapConfig = async (
+	template: string,
+	options: {
+		baseDir?: string;
+	}
+) => {
+	options.baseDir ??= resolve(__dirname, '..', 'templates', template);
+
+	return <ITapConfig>(await import(pathToFileURL(resolve(options.baseDir, '.taprc.js')).toString())).default;
 };
 
 /**
  * Walks through a template directory and creates a new directory with the same
  * structure.
  */
-const createTemplateContents = async (template: string, name: string, responses: Answers) => {
+const createTemplateContents = async ({ template, name, responses }: ICreateTemplateContentOptions) => {
 	const templatePath = resolve(__dirname, '..', 'templates', template);
 	const destinationPath = resolve(process.cwd(), name!);
 
-	await copy(templatePath, destinationPath, {
-		filter: (file: string): boolean => (!DENY_LIST.some((deny) => file.includes(deny)) ? true : false),
-	});
+	await copy(templatePath, destinationPath, { filter });
 
 	for await (const file of recursiveReaddir(destinationPath)) {
 		if (!file.endsWith('.template')) continue;
@@ -68,4 +69,23 @@ const createTemplateContents = async (template: string, name: string, responses:
 	}
 };
 
-export { createDirectoryAndCheckForExistence, createTemplateContents, getTapConfig };
+/**
+ * @param {string} path
+ * @returns {string}
+ */
+const home = (path: string) => (path === '~' ? HOME : path.startsWith('~/') ? resolve(HOME, path.slice(2)) : path);
+const filter = (file: string): boolean => (!DENY_LIST.some((deny) => file.includes(deny)) ? true : false);
+
+const doFirstTimeInstall = async () => {
+	const config = home('~/.config/tap');
+
+	if (existsSync(config)) return;
+
+	await mkdir(config, { recursive: true });
+	await copy(resolve(__dirname, '..', 'templates'), resolve(config, 'templates'));
+
+	success('Created ~/.config/tap');
+	success('Added default templates to ~/.config/tap/templates');
+};
+
+export { createDirectoryAndCheckForExistence, createTemplateContents, getTapConfig, doFirstTimeInstall, recursiveReaddir };
