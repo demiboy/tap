@@ -7,6 +7,24 @@
 	"repository": "git@github.com:pinkcig/tap.git",
 	"bin": "dist/index.js",
 	"main": "dist/index.js",
+	"files": [
+		"dist/*.js",
+		"dist/*.d.ts",
+		"!dist/*.js.map",
+		"!dist/*.d.ts.map",
+		"LICENSE",
+		"README.md"
+	],
+	"keywords": [
+		"tap",
+		"cli",
+		"cli-app",
+		"cli-template",
+		"cli-template-generator",
+		"templates",
+		"templates-generator",
+		"template"
+	],
 	"scripts": {
 		"build": "tsup && tsc -b src",
 		"clean": "shx rm -rf dist",
