@@ -1,7 +1,6 @@
 import type { ICommand } from './';
 
-import { execSync } from 'child_process';
-import { home } from '../utilities';
+import { home, execute } from '../utilities';
 import { success, warn } from '../logging';
 
 export default <ICommand>{
@@ -20,7 +19,7 @@ export default <ICommand>{
 			}
 
 			const [user, repoName] = repo.split('/');
-			execSync(
+			await execute(
 				`git clone --quiet git@github.com:${user}/${repoName}.git ${home(
 					'~/.config/tap/templates/' + repoName
 				)}`

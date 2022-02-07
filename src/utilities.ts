@@ -90,6 +90,6 @@ export {
 	doFirstTimeInstall,
 	recursiveReaddir,
 	home,
-	exec,
+	execute,
 	TEMPLATES_DIRECTORY,
 };
