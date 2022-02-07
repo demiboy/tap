@@ -1,16 +1,19 @@
 import type { ITapConfig, ICreateTemplateContentOptions } from './interfaces';
 
 import { mkdir, readdir, readFile, writeFile, rm } from 'node:fs/promises';
+import { fatal, success } from './logging';
 import { pathToFileURL } from 'node:url';
 import { existsSync } from 'node:fs';
+import { promisify } from 'node:util';
 import { resolve } from 'node:path';
-import { render } from 'mustache';
-import { fatal, success } from './logging';
 import { homedir } from 'node:os';
+import { render } from 'mustache';
 import { copy } from 'fs-extra'; // TODO: remove this and implement it myself
+import { exec } from 'node:child_process';
 
 const home = (path: string) => (path === '~' ? HOME : path.startsWith('~/') ? resolve(HOME, path.slice(2)) : path);
 const filter = (file: string): boolean => (!DENY_LIST.some((deny) => file.includes(deny)) ? true : false);
+const execute = promisify(exec);
 
 const HOME = homedir();
 const TEMPLATES_DIRECTORY = home('~/.config/tap/templates');
@@ -74,10 +77,10 @@ const doFirstTimeInstall = async () => {
 	if (existsSync(config)) return;
 
 	await mkdir(config, { recursive: true });
-	await copy(resolve(__dirname, '..', 'templates'), resolve(config, 'templates'));
+	await execute(`git clone git@github.com:demiboy/typescript-tsup-with-yarn-v3.git ${TEMPLATES_DIRECTORY}`);
 
 	success('Created ~/.config/tap');
-	success('Added default templates to ~/.config/tap/templates');
+	success('Added default template to ~/.config/tap/templates');
 };
 
 export {
@@ -87,5 +90,6 @@ export {
 	doFirstTimeInstall,
 	recursiveReaddir,
 	home,
+	exec,
 	TEMPLATES_DIRECTORY,
 };
