@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-import type { Question } from 'inquirer';
+import type { ListQuestion, Question } from 'inquirer';
 import type { ITapConfig } from './interfaces';
 
 import {
@@ -8,19 +8,26 @@ import {
 	createTemplateContents,
 	doFirstTimeInstall,
 	getTapConfig,
+	TEMPLATES_DIRECTORY,
 } from './utilities';
 import { default as questions } from './questions';
 import { commands } from './commands';
 import { resolve } from 'node:path';
 import { prompt } from 'inquirer';
 import { fatal } from './logging';
+import { readdirSync } from 'fs-extra';
 
 (async () => {
-	await doProcessArguments();
-
 	await doFirstTimeInstall();
+	await doProcessArguments();
+	
+	doAssignTemplates();
 	await doGenerateProject();
 })().catch(fatal);
+
+function doAssignTemplates() {
+	(<ListQuestion>questions[0]).choices = readdirSync(TEMPLATES_DIRECTORY);	
+} 
 
 async function doGenerateProject() {
 	let data = await prompt(questions);

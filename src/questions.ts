@@ -1,14 +1,11 @@
 import type { Question } from 'inquirer';
 
-import { readdirSync } from 'node:fs';
-import { TEMPLATES_DIRECTORY } from './utilities';
-
 export default <Question[]>[
 	{
 		name: 'template',
 		type: 'list',
 		message: 'Which template would you like to use?',
-		choices: readdirSync(TEMPLATES_DIRECTORY),
+		choices: null,
 		default: 'default',
 	},
 	{

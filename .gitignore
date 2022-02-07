@@ -9,6 +9,7 @@
 !/.yarn/cache
 #/.pnp.*
 
+.npmrc
 node_modules
 dist
 templates/_
