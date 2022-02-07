@@ -5,7 +5,9 @@
 	"author": "Faye Keller",
 	"license": "GPL-3.0",
 	"repository": "git@github.com:pinkcig/tap.git",
-	"bin": "dist/index.js",
+	"bin": {
+		"tap": "dist/index.js"
+	},
 	"main": "dist/index.js",
 	"files": [
 		"dist/*.js",
