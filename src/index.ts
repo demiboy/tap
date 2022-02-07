@@ -20,14 +20,14 @@ import { readdirSync } from 'fs-extra';
 (async () => {
 	await doFirstTimeInstall();
 	await doProcessArguments();
-	
+
 	doAssignTemplates();
 	await doGenerateProject();
 })().catch(fatal);
 
 function doAssignTemplates() {
-	(<ListQuestion>questions[0]).choices = readdirSync(TEMPLATES_DIRECTORY);	
-} 
+	(<ListQuestion>questions[0]).choices = readdirSync(TEMPLATES_DIRECTORY);
+}
 
 async function doGenerateProject() {
 	let data = await prompt(questions);

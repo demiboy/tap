@@ -1,7 +1,8 @@
 import type { ICommand } from './';
 
-import { home, execute } from '../utilities';
+import { home } from '../utilities';
 import { success, warn } from '../logging';
+import { execSync } from 'node:child_process';
 
 export default <ICommand>{
 	help: 'install a tap template',
@@ -11,7 +12,6 @@ export default <ICommand>{
 	},
 	run: async (repos: string[]) => {
 		const invalid = [];
-
 		for (const repo of repos) {
 			if (!isValidRepo(repo)) {
 				invalid.push(repo);
@@ -19,7 +19,7 @@ export default <ICommand>{
 			}
 
 			const [user, repoName] = repo.split('/');
-			await execute(
+			execSync(
 				`git clone --quiet git@github.com:${user}/${repoName}.git ${home(
 					'~/.config/tap/templates/' + repoName
 				)}`
