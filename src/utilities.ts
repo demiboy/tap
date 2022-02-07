@@ -77,7 +77,9 @@ const doFirstTimeInstall = async () => {
 	if (existsSync(config)) return;
 
 	await mkdir(config, { recursive: true });
-	await execute(`git clone git@github.com:demiboy/typescript-tsup-with-yarn-v3.git ${TEMPLATES_DIRECTORY}`);
+	await execute(
+		`git clone git@github.com:demiboy/typescript-tsup-with-yarn-v3.git ${TEMPLATES_DIRECTORY}/typescript-tsup-with-yarn-v3`
+	);
 
 	success('Created ~/.config/tap');
 	success('Added default template to ~/.config/tap/templates');

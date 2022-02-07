@@ -1,7 +1,7 @@
 {
 	"name": "@pinkcig/tap",
 	"description": "Creates application from provided templates, based on my opinionated tastes",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"author": "Faye Keller",
 	"license": "GPL-3.0",
 	"repository": "git@github.com:pinkcig/tap.git",
