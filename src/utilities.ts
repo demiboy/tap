@@ -48,7 +48,7 @@ const createDirectoryAndCheckForExistence = async (path: string) => {
  */
 const getTapConfig = async (template: string) =>
 	<ITapConfig>(
-		(await import(pathToFileURL(resolve(TEMPLATES_DIRECTORY, 'templates', template, '.taprc.js')).toString()))
+		(await import(pathToFileURL(resolve(TEMPLATES_DIRECTORY, template, '.taprc.js')).toString()))
 			.default
 	);
 
