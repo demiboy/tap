@@ -9,7 +9,11 @@ import { fatal, success } from './logging';
 import { homedir } from 'node:os';
 import { copy } from 'fs-extra'; // TODO: remove this and implement it myself
 
+const home = (path: string) => (path === '~' ? HOME : path.startsWith('~/') ? resolve(HOME, path.slice(2)) : path);
+const filter = (file: string): boolean => (!DENY_LIST.some((deny) => file.includes(deny)) ? true : false);
+
 const HOME = homedir();
+const TEMPLATES_DIRECTORY = home('~/.config/tap/templates');
 const DENY_LIST = ['node_modules', '.taprc.js'];
 
 /**
@@ -39,23 +43,18 @@ const createDirectoryAndCheckForExistence = async (path: string) => {
 /**
  * Gets the tap configuration file.
  */
-const getTapConfig = async (
-	template: string,
-	options: {
-		baseDir?: string;
-	}
-) => {
-	options.baseDir ??= resolve(__dirname, '..', 'templates', template);
-
-	return <ITapConfig>(await import(pathToFileURL(resolve(options.baseDir, '.taprc.js')).toString())).default;
-};
+const getTapConfig = async (template: string) =>
+	<ITapConfig>(
+		(await import(pathToFileURL(resolve(TEMPLATES_DIRECTORY, 'templates', template, '.taprc.js')).toString()))
+			.default
+	);
 
 /**
  * Walks through a template directory and creates a new directory with the same
  * structure.
  */
 const createTemplateContents = async ({ template, name, responses }: ICreateTemplateContentOptions) => {
-	const templatePath = resolve(__dirname, '..', 'templates', template);
+	const templatePath = resolve(TEMPLATES_DIRECTORY, template);
 	const destinationPath = resolve(process.cwd(), name!);
 
 	await copy(templatePath, destinationPath, { filter });
@@ -69,13 +68,6 @@ const createTemplateContents = async ({ template, name, responses }: ICreateTemp
 	}
 };
 
-/**
- * @param {string} path
- * @returns {string}
- */
-const home = (path: string) => (path === '~' ? HOME : path.startsWith('~/') ? resolve(HOME, path.slice(2)) : path);
-const filter = (file: string): boolean => (!DENY_LIST.some((deny) => file.includes(deny)) ? true : false);
-
 const doFirstTimeInstall = async () => {
 	const config = home('~/.config/tap');
 
@@ -88,4 +80,12 @@ const doFirstTimeInstall = async () => {
 	success('Added default templates to ~/.config/tap/templates');
 };
 
-export { createDirectoryAndCheckForExistence, createTemplateContents, getTapConfig, doFirstTimeInstall, recursiveReaddir };
+export {
+	createDirectoryAndCheckForExistence,
+	createTemplateContents,
+	getTapConfig,
+	doFirstTimeInstall,
+	recursiveReaddir,
+	home,
+	TEMPLATES_DIRECTORY,
+};

@@ -17,13 +17,14 @@ import { fatal } from './logging';
 
 (async () => {
 	await doProcessArguments();
+
 	await doFirstTimeInstall();
 	await doGenerateProject();
 })().catch(fatal);
 
 async function doGenerateProject() {
 	let data = await prompt(questions);
-	const config = await getTapConfig(data.template, {});
+	const config = await getTapConfig(data.template);
 
 	data = { ...data, ...(await prompt(config.questions)) };
 

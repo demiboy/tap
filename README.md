@@ -6,6 +6,10 @@ Generate projects in a... tap
 $ tap
 ```
 
+```sh
+$ tap install demiboy/gba # Install a template
+```
+
 # 📋 Usage
 
 Binary incoming soon.  
