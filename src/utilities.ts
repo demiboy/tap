@@ -4,18 +4,18 @@ import { mkdir, readdir, readFile, writeFile, rm } from 'node:fs/promises';
 import { fatal, success } from './logging';
 import { pathToFileURL } from 'node:url';
 import { existsSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { homedir } from 'node:os';
 import { render } from 'mustache';
 import { copy } from 'fs-extra'; // TODO: remove this and implement it myself
-import { execSync } from 'node:child_process';
 
 const home = (path: string) => (path === '~' ? HOME : path.startsWith('~/') ? resolve(HOME, path.slice(2)) : path);
 const filter = (file: string): boolean => (!DENY_LIST.some((deny) => file.includes(deny)) ? true : false);
 
 const HOME = homedir();
 const TEMPLATES_DIRECTORY = home('~/.config/tap/templates');
-const DENY_LIST = ['node_modules', '.taprc.js'];
+const DENY_LIST = ['node_modules', '.taprc.js', '.git'];
 
 /**
  * Reads a directory recursively.
@@ -45,10 +45,7 @@ const createDirectoryAndCheckForExistence = async (path: string) => {
  * Gets the tap configuration file.
  */
 const getTapConfig = async (template: string) =>
-	<ITapConfig>(
-		(await import(pathToFileURL(resolve(TEMPLATES_DIRECTORY, template, '.taprc.js')).toString()))
-			.default
-	);
+	<ITapConfig>(await import(pathToFileURL(resolve(TEMPLATES_DIRECTORY, template, '.taprc.js')).toString())).default;
 
 /**
  * Walks through a template directory and creates a new directory with the same
