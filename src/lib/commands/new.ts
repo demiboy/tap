@@ -1,7 +1,7 @@
 import type { ITapConfig } from '../typings';
 
 import { cp, readdir, readFile, writeFile, rm } from 'node:fs/promises';
-import { getTemplates, templateDir } from '../utils';
+import { getTemplates, configDir } from '../utils';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 // Not destructured as ESM issues and bla bla bla
@@ -26,7 +26,7 @@ export async function newProject() {
 
 	const config = await getTapConfig(answer.template);
 
-	await cp(resolve(templateDir, answer.template), resolve(answer.name), {
+	await cp(resolve(configDir, answer.template), resolve(answer.name), {
 		recursive: true,
 		filter: (dest) => !['.git', 'node_modules', '.taprc.js'].some((name) => dest.endsWith(name)),
 	});
@@ -42,7 +42,7 @@ export async function newProject() {
 }
 
 async function getTapConfig(template: string): Promise<ITapConfig> {
-	const module = await import(pathToFileURL(resolve(templateDir, template, '.taprc.js')).toString());
+	const module = await import(pathToFileURL(resolve(configDir, template, '.taprc.js')).toString());
 	return module.default;
 }
 

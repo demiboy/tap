@@ -1,9 +1,8 @@
 import { execa } from 'execa';
-import { ensureConfigDirExists, error, success, templateDir } from '../utils';
+import { error, success, configDir } from '../utils';
 
 export async function add(repos: string[], { verbose }: { verbose: boolean }) {
-	await ensureConfigDirExists();
-	await Promise.all(repos.map(clone(verbose, templateDir)));
+	await Promise.all(repos.map(clone(verbose, configDir)));
 }
 
 function clone(verbose: boolean = false, cwd: string) {

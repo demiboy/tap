@@ -23,7 +23,10 @@ Here are some examples:
 $ tap
 $ tap help
 $ tap help install
-$ tap install demiboy/gba pinkcig/tap # Installs a template
+$ tap install https://github.com/demiboy/gba # Installs a template
+$ tap update # Updates all templates
+$ tap update gba # Updates a specific template
+
 ```
 
 # 🔧 Creating a template
@@ -45,17 +48,17 @@ module.exports = require('@pinkcig/tap').defineConfiguration({
 		{
 			name: 'description',
 			message: "What's the description of your project?",
-			default: 'No description provided.',
+			initial: 'No description provided.',
 		},
 		{
 			name: 'author',
 			message: "What's the author of your project?",
-			default: 'No author provided.',
+			initial: 'No author provided.',
 		},
 		{
 			name: 'repository',
 			message: "What's the repository of your project?",
-			default: 'No repository provided.',
+			initial: 'No repository provided.',
 		},
 	],
 });

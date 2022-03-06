@@ -1,13 +1,10 @@
 import { execa } from 'execa';
 import { resolve } from 'node:path';
-import { ensureConfigDirExists, error, getTemplates, success, templateDir } from '../utils';
+import { error, getTemplates, success, configDir } from '../utils';
 
 export async function update(repos: string[], { verbose }: { verbose: boolean }) {
-	await ensureConfigDirExists();
-
 	if (repos[0] === 'all') repos = await getTemplates();
-
-	await Promise.all(repos.map(pull(verbose, templateDir)));
+	await Promise.all(repos.map(pull(verbose, configDir)));
 }
 
 function pull(verbose: boolean, cwd: string) {
