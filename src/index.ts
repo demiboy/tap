@@ -1,58 +1,26 @@
 #! /usr/bin/env node
 
-import type { ListQuestion, Question } from 'inquirer';
-import type { ITapConfig } from './interfaces';
+import { createColors } from 'colorette';
+import { Command } from 'commander';
+import { add } from './lib/commands';
+import { getPackageJSONData } from './lib/utils';
 
-import {
-	createDirectoryAndCheckForExistence,
-	createTemplateContents,
-	doFirstTimeInstall,
-	getTapConfig,
-	TEMPLATES_DIRECTORY,
-} from './utilities';
-import { default as questions } from './questions';
-import { commands } from './commands';
-import { resolve } from 'node:path';
-import { prompt } from 'inquirer';
-import { fatal } from './logging';
-import { readdirSync } from 'fs-extra';
+createColors({ useColor: true });
 
-(async () => {
-	await doFirstTimeInstall();
-	await doProcessArguments();
+const tap = new Command();
+const { version, description } = await getPackageJSONData();
 
-	doAssignTemplates();
-	await doGenerateProject();
-})().catch(fatal);
+tap //
+	.name('tap')
+	.version(version)
+	.description(description);
 
-function doAssignTemplates() {
-	(<ListQuestion>questions[0]).choices = readdirSync(TEMPLATES_DIRECTORY);
-}
+tap
+	.command('add')
+	.description('add a new template')
+	.alias('a')
+	.argument('<repos...>', 'repositories to add')
+	.option('-v, --verbose', 'verbose output')
+	.action(add);
 
-async function doGenerateProject() {
-	let data = await prompt(questions);
-	const config = await getTapConfig(data.template);
-
-	data = { ...data, ...(await prompt(config.questions)) };
-
-	await createDirectoryAndCheckForExistence(resolve('.', data.name));
-	await createTemplateContents({
-		template: data.template,
-		name: data.name,
-		responses: data,
-	});
-}
-
-async function doProcessArguments() {
-	const [command, ...args] = process.argv.slice(2);
-
-	if (!command) return;
-	if (!commands.has(command)) fatal(`Command ${command} not found`);
-
-	commands.get(command)!.run(args, commands);
-	process.exit(0);
-}
-
-export const doDefineConfiguration = (questions: Question[]): ITapConfig => ({
-	questions,
-});
+tap.parse(process.argv);
