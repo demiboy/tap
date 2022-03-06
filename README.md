@@ -43,7 +43,7 @@ For example:
  * Do note that, as the question is an array of inquirer questions
  * you can use all of prompts' features and power, eg: validation etc
  */
-module.exports = require('@pinkcig/tap').defineConfiguration({
+module.exports = {
 	questions: [
 		{
 			name: 'description',
@@ -61,7 +61,7 @@ module.exports = require('@pinkcig/tap').defineConfiguration({
 			initial: 'No repository provided.',
 		},
 	],
-});
+};
 ```
 
 `README.md.template`
@@ -71,7 +71,7 @@ module.exports = require('@pinkcig/tap').defineConfiguration({
 
 {{description}}
 
-As internally tap uses Mustache, much like Inquirer, you can use all of it's features and power as well!
+As internally tap uses Mustache, much like Prompts, you can use all of it's features and power as well!
 ```
 
 `package.json.template`

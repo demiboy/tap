@@ -10,9 +10,9 @@ export async function getTemplates(): Promise<string[]> {
 }
 
 export function success(message: string) {
-	console.log(bold(greenBright(`✅ ${message}`)));
+	console.log(bold(greenBright(`✔ ${message}`)));
 }
 
 export function error(message: string) {
-	console.error(bold(redBright(`❌ ${message}`)));
+	console.error(bold(redBright(`x ${message}`)));
 }

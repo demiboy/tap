@@ -4,7 +4,6 @@ import { cp, readdir, readFile, writeFile, rm } from 'node:fs/promises';
 import { getTemplates, configDir } from '../utils';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
-// Not destructured as ESM issues and bla bla bla
 import mustache from 'mustache';
 import prompts from 'prompts';
 
