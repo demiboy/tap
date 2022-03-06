@@ -1,26 +1,39 @@
 #! /usr/bin/env node
 
+import type { ITapConfig } from './lib/typings';
+
+import { getPackageJSONData } from './lib/utils';
+import { add, newProject, update } from './lib/commands';
 import { createColors } from 'colorette';
 import { Command } from 'commander';
-import { add } from './lib/commands';
-import { getPackageJSONData } from './lib/utils';
 
 createColors({ useColor: true });
 
-const tap = new Command();
 const { version, description } = await getPackageJSONData();
 
-tap //
+// prettier-ignore
+new Command()
 	.name('tap')
 	.version(version)
-	.description(description);
-
-tap
+	.description(description)
 	.command('add')
-	.description('add a new template')
-	.alias('a')
-	.argument('<repos...>', 'repositories to add')
-	.option('-v, --verbose', 'verbose output')
-	.action(add);
+		.description('add a new template')
+		.alias('a')
+		.argument('<repos...>', 'repositories to add')
+		.option('-v, --verbose', 'verbose output')
+		.action(add)
+	.command('update')
+		.description('update a template')
+		.alias('u')
+		.argument('[repos...]', "repositories to update or 'all'", ['all'])
+		.option('-v, --verbose', 'verbose output')
+		.action(update)
+	.command('new')
+		.description('create a new project')
+		.alias('n')
+		.action(newProject)
+	.parse(process.argv);
 
-tap.parse(process.argv);
+export function defineConfiguration(config: ITapConfig): ITapConfig {
+	return config;
+}

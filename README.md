@@ -38,7 +38,7 @@ For example:
 ```js
 /**
  * Do note that, as the question is an array of inquirer questions
- * you can use all of inquire's features and power, eg: validation etc
+ * you can use all of prompts' features and power, eg: validation etc
  */
 module.exports = require('@pinkcig/tap').defineConfiguration({
 	questions: [
