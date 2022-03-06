@@ -1,7 +1,5 @@
 #! /usr/bin/env node
 
-import type { ITapConfig } from './lib/typings';
-
 import { access, mkdir, readFile } from 'node:fs/promises';
 import { add, newProject, update } from './lib/commands';
 import { createColors } from 'colorette';
@@ -46,10 +44,7 @@ tap //
 	.command('new')
 	.description('create a new project')
 	.alias('n')
+	.argument('[name]', 'name of the project')
 	.action(newProject);
 
 tap.parse(process.argv);
-
-export function defineConfiguration(config: ITapConfig): ITapConfig {
-	return config;
-}
